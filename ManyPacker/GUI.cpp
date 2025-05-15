@@ -1,5 +1,9 @@
 #include "GUI.hpp"
 #include "imgui.h"
+#include "utils.hpp"
+#include "defines.hpp"
+#include "prefs.hpp"
+#include "assets.hpp"
 
 namespace ManyPacker
 {
@@ -8,6 +12,7 @@ namespace ManyPacker
 		void DrawGUI()
 		{
 			static bool about = false;
+			static bool showSelectDir = true;
 
             SetStyle();
             ImGui::NewFrame();
@@ -23,7 +28,7 @@ namespace ManyPacker
                 | ImGuiWindowFlags_MenuBar;
 
             // Window title and basic setup
-            ImGui::Begin("ManyPacker", nullptr, window_flags);
+            ImGui::Begin(MANYPACKER_NAME, nullptr, window_flags);
 
             float totalWidth = ImGui::GetContentRegionAvail().x;
             float spacing = ImGui::GetStyle().ItemSpacing.x;
@@ -35,6 +40,13 @@ namespace ManyPacker
             {
                 if (ImGui::BeginMenu("File"))
                 {
+                    if (ImGui::MenuItem("Set CoD4 folder..."))
+                    {
+                        ManyPacker::Utils::selectCoD4Root();
+                    }
+
+                    ImGui::Separator();
+
                     if (ImGui::MenuItem("Exit"))
                         exit(0);
 
@@ -58,7 +70,20 @@ namespace ManyPacker
 				about = false;
 			}
 
+            if (ManyPacker::Prefs::rootfolder.empty() && showSelectDir)
+            {
+                ImGui::OpenPopup("CoD4 root dir not found!");
+				showSelectDir = false;
+            }
+
+            if (!ManyPacker::Utils::checkCod4Dir() && !ManyPacker::Prefs::rootfolder.empty())
+            {
+                ImGui::OpenPopup("Invalid CoD4 root dir!");
+            }
+
 			Components::AboutWindow();
+			Components::SelectDirWindow();
+			Components::InvalidDirWindow();
 
             // === Left Panel: Asset Selection ===
             ImGui::BeginChild("AssetSelection", ImVec2(childWidth, 0), true);
@@ -66,14 +91,15 @@ namespace ManyPacker
             ImGui::Separator();
 
             // Tabs for XModels, SP Weapons, MP Weapons
-            if (ImGui::BeginTabBar("##AssetTabs")) {
-
-				Components::ItemSelection("XModels");
-                Components::ItemSelection("MP Weapons");
-                Components::ItemSelection("SP Weapons");
+            if (ImGui::BeginTabBar("##AssetTabs"))
+            {
+                Components::ItemSelection("XModels", ManyPacker::Utils::XModels, ManyPacker::Utils::AssetType::XMODEL);
+                Components::ItemSelection("MP Weapons", ManyPacker::Utils::MPWeapons, ManyPacker::Utils::AssetType::MP_WEAPON);
+				Components::ItemSelection("SP Weapons", ManyPacker::Utils::SPWeapons, ManyPacker::Utils::AssetType::SP_WEAPON);
 
                 ImGui::EndTabBar();
             }
+
             ImGui::EndChild();
 
             ImGui::SameLine();
@@ -83,13 +109,38 @@ namespace ManyPacker
             ImGui::Text("Selected Assets");
             ImGui::Separator();
 
-            for (int i = 0; i < 5; i++) {
-                ImGui::Text("Asset_%d (Type)", i);
-                ImGui::SameLine();
-                if (ImGui::Button(("Remove##" + std::to_string(i)).c_str())) {
-                    // Remove asset logic
+            static int item_current = -1;
+            static bool item_highlight = false;
+
+            if (ImGui::BeginListBox("Assets", ImVec2(183, 180)))
+            {
+                for (int n = 0; n < ManyPacker::Utils::SelectedAssets.size(); n++)
+                {
+                    const bool is_selected = (item_current == n);
+                    if (ImGui::Selectable((ManyPacker::Utils::SelectedAssets[n].type.toString() + ManyPacker::Utils::SelectedAssets[n].name).c_str(), is_selected))
+                        item_current = n;
+
+                    if (item_highlight && ImGui::IsItemHovered())
+                        item_current = n;
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
                 }
+                ImGui::EndListBox();
             }
+
+
+            if (ImGui::Button("Remove Selected", ImVec2(-1, 0)))
+            {
+                ManyPacker::Utils::removeAsset(item_current);
+            }
+
+            if (ImGui::Button("Clear List", ImVec2(-1, 0)))
+            {
+                ManyPacker::Utils::SelectedAssets.clear();
+            }
+
             ImGui::EndChild();
 
             ImGui::SameLine();
@@ -100,136 +151,130 @@ namespace ManyPacker
             ImGui::Separator();
 
             // Output directory selector (placeholder)
-            static char outputDir[256] = "C:/CoD4/Mods/Output";
-            ImGui::InputText("Output Directory", outputDir, IM_ARRAYSIZE(outputDir));
-            if (ImGui::Button("Browse")) {
-                // Browse dialog logic
+            ImGui::InputText("Output Dir", ManyPacker::Prefs::outputfolder, IM_ARRAYSIZE(ManyPacker::Prefs::outputfolder));
+            if (ImGui::Button("Browse"))
+            {
+				std::wstring selectedFolder = ManyPacker::Utils::selectFolder();
+
+                if (!selectedFolder.empty())
+                {
+                    wcstombs_s(NULL, ManyPacker::Prefs::outputfolder, sizeof(ManyPacker::Prefs::outputfolder), selectedFolder.c_str(), _TRUNCATE);
+
+                    std::wstring outputFolderWString = std::wstring(ManyPacker::Prefs::outputfolder, ManyPacker::Prefs::outputfolder + strlen(ManyPacker::Prefs::outputfolder));
+                    ManyPacker::Prefs::savePreference(outputFolderWString, L"outputfolder");
+                }
             }
 
             // Export format combo box
             static int exportFormat = 0;
-            const char* formats[] = { ".pak", ".zip", ".bin" };
+            const char* formats[] = { ".zip", ".rar", ".7z", "Folder - No archive"};
             ImGui::Combo("Format", &exportFormat, formats, IM_ARRAYSIZE(formats));
 
             // Export button
-            if (ImGui::Button("Export", ImVec2(-1, 0))) {
-                // Export action logic
-            }
-
-            // Status / progress placeholder
-            ImGui::Text("Status: Idle");
-
-            // Settings section
-            ImGui::Separator();
-            ImGui::Text("Settings");
-            static bool autoDetectDeps = true;
-            ImGui::Checkbox("Auto-detect dependencies", &autoDetectDeps);
-            static bool includeTextures = true;
-            ImGui::Checkbox("Include textures", &includeTextures);
-            static bool includeSounds = true;
-            ImGui::Checkbox("Include sounds", &includeSounds);
-            static bool overwriteFiles = false;
-            ImGui::Checkbox("Overwrite existing files", &overwriteFiles);
-
-            if (ImGui::Button("Reset Selections")) {
-                // Reset logic
+            if (ImGui::Button("Export", ImVec2(-1, 0)))
+            {
+                ManyPacker::Assets::ProcessAllAssets();
             }
 
             ImGui::EndChild();
 
             ImGui::End();
             ImGui::EndFrame();
-
 		}
 
         void SetStyle()
         {
-            // Windark style by DestroyerDarkNess from ImThemes
             ImGuiStyle& style = ImGui::GetStyle();
 
+            // Layout
             style.Alpha = 1.0f;
-            style.DisabledAlpha = 0.6000000238418579f;
-            style.WindowPadding = ImVec2(8.0f, 8.0f);
+            style.DisabledAlpha = 0.6f;
+            style.WindowPadding = ImVec2(8, 8);
+            style.WindowRounding = 4.0f;
             style.WindowBorderSize = 1.0f;
-            style.WindowMinSize = ImVec2(32.0f, 32.0f);
+            style.WindowMinSize = ImVec2(32, 32);
             style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
-            style.WindowMenuButtonPosition = ImGuiDir_Right;
-            style.ChildRounding = 3.0f;
-            style.ChildBorderSize = 1.0f;
-            style.PopupRounding = 3.0f;
-            style.PopupBorderSize = 1.0f;
-            style.FramePadding = ImVec2(4.0f, 3.0f);
-            style.FrameRounding = 3.0f;
-            style.FrameBorderSize = 1.0f;
-            style.ItemSpacing = ImVec2(8.0f, 4.0f);
-            style.ItemInnerSpacing = ImVec2(4.0f, 4.0f);
-            style.CellPadding = ImVec2(4.0f, 2.0f);
-            style.IndentSpacing = 21.0f;
-            style.ColumnsMinSpacing = 6.0f;
-            style.ScrollbarSize = 5.599999904632568f;
-            style.ScrollbarRounding = 18.0f;
+            style.FramePadding = ImVec2(6, 4);
+            style.FrameRounding = 4.0f;
+            style.FrameBorderSize = 0.0f;
+            style.ItemSpacing = ImVec2(8, 6);
+            style.ItemInnerSpacing = ImVec2(4, 4);
+            style.IndentSpacing = 20.0f;
+            style.ScrollbarSize = 14.0f;
+            style.ScrollbarRounding = 6.0f;
             style.GrabMinSize = 10.0f;
-            style.GrabRounding = 3.0f;
-            style.TabRounding = 3.0f;
+            style.GrabRounding = 4.0f;
+            style.TabRounding = 4.0f;
             style.TabBorderSize = 0.0f;
-            style.ColorButtonPosition = ImGuiDir_Right;
-            style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
-            style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
 
-            style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-            style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.6000000238418579f, 0.6000000238418579f, 0.6000000238418579f, 1.0f);
-            style.Colors[ImGuiCol_WindowBg] = ImVec4(0.125490203499794f, 0.125490203499794f, 0.125490203499794f, 1.0f);
-            style.Colors[ImGuiCol_ChildBg] = ImVec4(0.125490203499794f, 0.125490203499794f, 0.125490203499794f, 1.0f);
-            style.Colors[ImGuiCol_PopupBg] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_Border] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-            style.Colors[ImGuiCol_FrameBg] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_TitleBg] = ImVec4(0.125490203499794f, 0.125490203499794f, 0.125490203499794f, 1.0f);
-            style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.125490203499794f, 0.125490203499794f, 0.125490203499794f, 1.0f);
-            style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.125490203499794f, 0.125490203499794f, 0.125490203499794f, 1.0f);
-            style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.3019607961177826f, 0.3019607961177826f, 0.3019607961177826f, 1.0f);
-            style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.3490196168422699f, 0.3490196168422699f, 0.3490196168422699f, 1.0f);
-            style.Colors[ImGuiCol_CheckMark] = ImVec4(0.0f, 0.4705882370471954f, 0.843137264251709f, 1.0f);
-            style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.0f, 0.4705882370471954f, 0.843137264251709f, 1.0f);
-            style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.0f, 0.3294117748737335f, 0.6000000238418579f, 1.0f);
-            style.Colors[ImGuiCol_Button] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_Header] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.3019607961177826f, 0.3019607961177826f, 0.3019607961177826f, 1.0f);
-            style.Colors[ImGuiCol_Separator] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.3019607961177826f, 0.3019607961177826f, 0.3019607961177826f, 1.0f);
-            style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.3019607961177826f, 0.3019607961177826f, 0.3019607961177826f, 1.0f);
-            style.Colors[ImGuiCol_Tab] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_TabHovered] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_TabActive] = ImVec4(0.250980406999588f, 0.250980406999588f, 0.250980406999588f, 1.0f);
-            style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.168627455830574f, 0.168627455830574f, 0.168627455830574f, 1.0f);
-            style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.2156862765550613f, 0.2156862765550613f, 0.2156862765550613f, 1.0f);
-            style.Colors[ImGuiCol_PlotLines] = ImVec4(0.0f, 0.4705882370471954f, 0.843137264251709f, 1.0f);
-            style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.0f, 0.3294117748737335f, 0.6000000238418579f, 1.0f);
-            style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.0f, 0.4705882370471954f, 0.843137264251709f, 1.0f);
-            style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.0f, 0.3294117748737335f, 0.6000000238418579f, 1.0f);
-            style.Colors[ImGuiCol_TableHeaderBg] = ImVec4(0.1882352977991104f, 0.1882352977991104f, 0.2000000029802322f, 1.0f);
-            style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(0.3098039329051971f, 0.3098039329051971f, 0.3490196168422699f, 1.0f);
-            style.Colors[ImGuiCol_TableBorderLight] = ImVec4(0.2274509817361832f, 0.2274509817361832f, 0.2470588237047195f, 1.0f);
-            style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-            style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.05999999865889549f);
-            style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.0f, 0.4705882370471954f, 0.843137264251709f, 1.0f);
-            style.Colors[ImGuiCol_DragDropTarget] = ImVec4(1.0f, 1.0f, 0.0f, 0.8999999761581421f);
-            style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.2588235437870026f, 0.5882353186607361f, 0.9764705896377563f, 1.0f);
-            style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
-            style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.2000000029802322f);
-            style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.3499999940395355f);
+            // Colors
+            ImVec4 orange = ImVec4(0.76470588235f, 0.41960784313f, 0.08235294117f, 1.0f); // #ff8d1d
+            ImVec4 orangeHover = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
+            ImVec4 orangeActive = ImVec4(0.9f, 0.45f, 0.1f, 1.0f);
+            ImVec4 bgDark = ImVec4(0.07f, 0.07f, 0.07f, 0.94f);
+            ImVec4 bgLight = ImVec4(0.14f, 0.14f, 0.14f, 1.0f);
+            ImVec4 bgMedium = ImVec4(0.12f, 0.12f, 0.12f, 1.0f);
+            ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+            ImVec4 disabledText = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+            ImVec4 borderColor = ImVec4(0.35f, 0.35f, 0.4f, 0.5f);
+
+            ImVec4* colors = style.Colors;
+
+            colors[ImGuiCol_Text] = textColor;
+            colors[ImGuiCol_TextDisabled] = disabledText;
+            colors[ImGuiCol_WindowBg] = bgDark;
+            colors[ImGuiCol_ChildBg] = bgLight;
+            colors[ImGuiCol_PopupBg] = bgLight;
+            colors[ImGuiCol_Border] = borderColor;
+            colors[ImGuiCol_BorderShadow] = ImVec4(0, 0, 0, 0);
+            colors[ImGuiCol_FrameBg] = bgMedium;
+            colors[ImGuiCol_FrameBgHovered] = orangeHover;
+            colors[ImGuiCol_FrameBgActive] = orangeActive;
+            colors[ImGuiCol_TitleBg] = bgMedium;
+            colors[ImGuiCol_TitleBgActive] = bgLight;
+            colors[ImGuiCol_TitleBgCollapsed] = bgMedium;
+            colors[ImGuiCol_MenuBarBg] = bgMedium;
+            colors[ImGuiCol_ScrollbarBg] = bgDark;
+            colors[ImGuiCol_ScrollbarGrab] = orange;
+            colors[ImGuiCol_ScrollbarGrabHovered] = orangeHover;
+            colors[ImGuiCol_ScrollbarGrabActive] = orangeActive;
+            colors[ImGuiCol_CheckMark] = orange;
+            colors[ImGuiCol_SliderGrab] = orange;
+            colors[ImGuiCol_SliderGrabActive] = orangeActive;
+            colors[ImGuiCol_Button] = orange;
+            colors[ImGuiCol_ButtonHovered] = orangeHover;
+            colors[ImGuiCol_ButtonActive] = orangeActive;
+            colors[ImGuiCol_Header] = orange;
+            colors[ImGuiCol_HeaderHovered] = orangeHover;
+            colors[ImGuiCol_HeaderActive] = orangeActive;
+            colors[ImGuiCol_Separator] = borderColor;
+            colors[ImGuiCol_SeparatorHovered] = orangeHover;
+            colors[ImGuiCol_SeparatorActive] = orangeActive;
+            colors[ImGuiCol_ResizeGrip] = orange;
+            colors[ImGuiCol_ResizeGripHovered] = orangeHover;
+            colors[ImGuiCol_ResizeGripActive] = orangeActive;
+            colors[ImGuiCol_Tab] = bgMedium;
+            colors[ImGuiCol_TabHovered] = orangeHover;
+            colors[ImGuiCol_TabActive] = orange;
+            colors[ImGuiCol_TabUnfocused] = bgMedium;
+            colors[ImGuiCol_TabUnfocusedActive] = orange;
+            colors[ImGuiCol_PlotLines] = orange;
+            colors[ImGuiCol_PlotLinesHovered] = orangeHover;
+            colors[ImGuiCol_PlotHistogram] = orange;
+            colors[ImGuiCol_PlotHistogramHovered] = orangeHover;
+            colors[ImGuiCol_TableHeaderBg] = bgLight;
+            colors[ImGuiCol_TableBorderStrong] = borderColor;
+            colors[ImGuiCol_TableBorderLight] = borderColor;
+            colors[ImGuiCol_TableRowBg] = bgDark;
+            colors[ImGuiCol_TableRowBgAlt] = bgMedium;
+            colors[ImGuiCol_TextSelectedBg] = ImVec4(orange.x, orange.y, orange.z, 0.35f);
+            colors[ImGuiCol_DragDropTarget] = orange;
+            colors[ImGuiCol_NavHighlight] = orange;
+            colors[ImGuiCol_NavWindowingHighlight] = orange;
+            colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.8f, 0.8f, 0.8f, 0.2f);
+            colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.2f, 0.2f, 0.2f, 0.4f);
         }
+
 	}
 
     namespace Components
@@ -238,10 +283,11 @@ namespace ManyPacker
         {
             ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-            if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
                 ImGui::Text("ManyPacker");
                 ImGui::Separator();
-                ImGui::Text("A simple asset packer that automatically grabs every file connected\nto a specific asset from a CoD4 installation.");
+                ImGui::Text("A simple asset packer that automatically grabs every file connected\nto a specific asset from a CoD4 raw folder.");
                 ImGui::Text("Made by: Rex109");
 
                 if (ImGui::Button("OK", ImVec2(120, 0)))
@@ -252,17 +298,92 @@ namespace ManyPacker
             }
         }
 
-        void ItemSelection(std::string name)
+        void SelectDirWindow()
+        {
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopupModal("CoD4 root dir not found!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("The CoD4 root folder has not been found automatically, please select it manually.");
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                {
+                    ManyPacker::Utils::selectCoD4Root();
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
+
+        void InvalidDirWindow()
+        {
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopupModal("Invalid CoD4 root dir!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("The selected directory is invalid.");
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                {
+                    ManyPacker::Utils::selectCoD4Root();
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
+
+        void ItemSelection(std::string name, std::vector<std::string> &items, ManyPacker::Utils::AssetType::Type type)
         {
             if (ImGui::BeginTabItem(name.c_str()))
             {
-                static char xmodelSearch[128] = "";
-                ImGui::InputText(("Search##" + name).c_str(), xmodelSearch, IM_ARRAYSIZE(xmodelSearch));
+                static char filterBuffer[128] = "";
+                static int selectedItem = -1;
 
-                const char* items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
+                ImGui::InputText(("Search##" + name).c_str(), filterBuffer, IM_ARRAYSIZE(filterBuffer));
+
                 static int item_current = 1;
 
-                ImGui::ListBox(name.c_str(), &item_current, items, IM_ARRAYSIZE(items), 10);
+                if (ImGui::BeginListBox(name.c_str(), ImVec2(183,180)))
+                {
+                    for (int i = 0; i < items.size(); i++)
+                    {
+						char lowercaseItem[128];
+						strncpy_s(lowercaseItem, items[i].c_str(), sizeof(lowercaseItem));
+
+						for (int j = 0; lowercaseItem[j]; j++)
+							lowercaseItem[j] = tolower(lowercaseItem[j]);
+
+						char filterBufferLower[128];
+
+						strncpy_s(filterBufferLower, filterBuffer, sizeof(filterBufferLower));
+
+						for (int j = 0; filterBufferLower[j]; j++)
+							filterBufferLower[j] = tolower(filterBufferLower[j]);
+
+
+                        if (strlen(filterBufferLower) > 0 && strstr(lowercaseItem, filterBufferLower) == nullptr)
+                        {
+                            continue;
+                        }
+
+                        const bool isSelected = (selectedItem == i);
+                        if (ImGui::Selectable(items[i].c_str(), isSelected))
+                            selectedItem = i;
+
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndListBox();
+                }
+
+                if (ImGui::Button("Add Selected", ImVec2(-1, 0)) && selectedItem != -1)
+                {
+                    ManyPacker::Utils::addAsset(items[selectedItem], type);
+                }
 
                 ImGui::EndTabItem();
             }

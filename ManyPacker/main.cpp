@@ -5,6 +5,8 @@
 #include <tchar.h>
 #include "GUI.hpp"
 #include "defines.hpp"
+#include "prefs.hpp"
+#include "utils.hpp"
 
 static LPDIRECT3D9              g_pD3D = nullptr;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = nullptr;
@@ -19,18 +21,21 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int main(int, char**)
 {
+    ManyPacker::Prefs::LoadPrefs();
+    ManyPacker::Utils::updateAssets();
+
     ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ManyPacker", nullptr };
     ::RegisterClassExW(&wc);
 
 	//Set window at center of the screen
-	RECT rc = { 0, 0, 890, 560 };
+	RECT rc = { 0, 0, 890, 370 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 	int x = (screenWidth - (rc.right - rc.left)) / 2;
 	int y = (screenHeight - (rc.bottom - rc.top)) / 2;
-	HWND hwnd = ::CreateWindowW(wc.lpszClassName, MANYPACKER_FULL_NAME, WS_OVERLAPPEDWINDOW, x, y, rc.right, rc.bottom, nullptr, nullptr, wc.hInstance, nullptr);
+	HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"" MANYPACKER_FULL_NAME, WS_OVERLAPPEDWINDOW, x, y, rc.right, rc.bottom, nullptr, nullptr, wc.hInstance, nullptr);
 
     if (!CreateDeviceD3D(hwnd))
     {

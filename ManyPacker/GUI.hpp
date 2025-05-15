@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+#include "utils.hpp"
 
 namespace ManyPacker
 {
@@ -12,6 +14,8 @@ namespace ManyPacker
 	namespace Components
 	{
 		void AboutWindow();
-		void ItemSelection(std::string name);
+		void SelectDirWindow();
+		void InvalidDirWindow();
+		void ItemSelection(std::string name, std::vector<std::string>& items, ManyPacker::Utils::AssetType::Type type);
 	}
 }
