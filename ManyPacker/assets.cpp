@@ -62,13 +62,13 @@ namespace ManyPacker
 			for (const auto& material : Materials)
 				ManyPacker::Material::ReadMaterial(root / "raw" / "materials" / material);
 
+			Images.erase(std::remove_if(Images.begin(), Images.end(), [](const std::string& image) { return image[0] == '$'; }), Images.end());
+
 			std::cout << "Images:" << std::endl;
 			for (const auto& image : Images)
 			{
 				std::cout << "  " << image << ".iwi" << std::endl;
 			}
-
-			Images.erase(std::remove_if(Images.begin(), Images.end(), [](const std::string& image) { return image[0] == '$'; }), Images.end());
 
 			//Make a new directory in ManyPacker::Prefs::outputfolder
 
