@@ -3,6 +3,7 @@
 #include "prefs.hpp"
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 #include "material.hpp"
 
 namespace ManyPacker
@@ -64,10 +65,13 @@ namespace ManyPacker
 				std::cout << "  " << image << ".iwi" << std::endl;
 			}
 
-			Images.erase(std::remove(Images.begin(), Images.end(), "$identitynormalmap"), Images.end());
+			Images.erase(std::remove_if(Images.begin(), Images.end(), [](const std::string& image) { return image[0] == '$'; }), Images.end());
 
 			//Make a new directory in ManyPacker::Prefs::outputfolder
-            std::filesystem::path outputPath = std::filesystem::path(ManyPacker::Prefs::outputfolder) / "processed_assets";
+
+			std::string outputFolder = ManyPacker::Prefs::outputfolderName[0] == '\0' ? "processed_assets" : ManyPacker::Prefs::outputfolderName;
+
+            std::filesystem::path outputPath = std::filesystem::path(ManyPacker::Prefs::outputfolder) / outputFolder;
 			std::filesystem::create_directories(outputPath);
 
 			//Create XModel folder if it's more than 0
@@ -109,6 +113,18 @@ namespace ManyPacker
 					std::filesystem::copy_file(root / "raw" / "images" / iwi, outputPath / "images" / iwi, std::filesystem::copy_options::overwrite_existing);
 				}
 			}
+
+			//Create the mod.csv file
+			std::ofstream modcsv(outputPath / "mod.csv");
+			if (modcsv.is_open())
+			{
+				for (const auto& asset : ManyPacker::Utils::SelectedAssets)
+				{
+					modcsv << const_cast<ManyPacker::Utils::AssetType&>(asset.type).toString() << asset.name << std::endl;
+				}
+			}
+
+			modcsv.close();
 
 			//Clean up everything
 			XModels.clear();

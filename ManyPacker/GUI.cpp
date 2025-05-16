@@ -165,6 +165,8 @@ namespace ManyPacker
                 }
             }
 
+            ImGui::InputText("Output Name", ManyPacker::Prefs::outputfolderName, IM_ARRAYSIZE(ManyPacker::Prefs::outputfolderName));
+
             // Export format combo box
             static int exportFormat = 0;
             const char* formats[] = { ".zip", ".rar", ".7z", "Folder - No archive"};
@@ -383,10 +385,16 @@ namespace ManyPacker
                 if (ImGui::Button("Add Selected", ImVec2(-1, 0)) && selectedItem != -1)
                 {
                     ManyPacker::Utils::addAsset(items[selectedItem], type);
+
+                    if(ManyPacker::Utils::SelectedAssets.size() == 1)
+                    {
+						strcpy_s(ManyPacker::Prefs::outputfolderName, sizeof(ManyPacker::Prefs::outputfolderName), ManyPacker::Utils::SelectedAssets[0].name.c_str());
+					}
                 }
 
                 ImGui::EndTabItem();
-            }
+                
+            }   
         }
     }
 }

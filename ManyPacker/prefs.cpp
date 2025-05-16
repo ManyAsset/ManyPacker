@@ -11,6 +11,7 @@ namespace ManyPacker
 	{
 		std::wstring rootfolder;
         char outputfolder[256];
+        char outputfolderName[256];
 
         void LoadPrefs()  
         {  
