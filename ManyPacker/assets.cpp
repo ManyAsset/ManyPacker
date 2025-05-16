@@ -69,6 +69,8 @@ namespace ManyPacker
 				}
 			}
 
+			ManyPacker::Utils::AdditionalAssets.erase(std::unique(ManyPacker::Utils::AdditionalAssets.begin(), ManyPacker::Utils::AdditionalAssets.end()), ManyPacker::Utils::AdditionalAssets.end());
+
 			std::cout << "Sound Aliases:" << std::endl;
 			for (const auto& soundAlias : SoundAliases)
 			{
@@ -79,9 +81,6 @@ namespace ManyPacker
 					std::cout << "    " << file << std::endl;
 				}
 			}
-
-			std::sort(Materials.begin(), Materials.end());
-			Materials.erase(std::unique(Materials.begin(), Materials.end()), Materials.end());
 
 			std::cout << "Weapons:" << std::endl;
 			for (const auto& weapon : Weapons)
@@ -106,7 +105,6 @@ namespace ManyPacker
 				std::cout << "  " << xanim << std::endl;
 			}
 
-			std::sort(Materials.begin(), Materials.end());
 			Materials.erase(std::unique(Materials.begin(), Materials.end()), Materials.end());
 			Materials.erase(std::remove(Materials.begin(), Materials.end(), "lambert1"), Materials.end());
 
@@ -143,6 +141,7 @@ namespace ManyPacker
 				for (const auto& soundAlias : SoundAliases)
 				{
 					auto soundAliasPath = root / "raw" / "soundaliases" / (soundAlias.name + ".csv");
+
 					if (!std::filesystem::exists(soundAliasPath))
 					{
 						std::cout << "Error: Missing file " << soundAliasPath << '\n';
@@ -150,7 +149,9 @@ namespace ManyPacker
 						CleanUpAssets();
 						return;
 					}
+
 					std::filesystem::copy_file(soundAliasPath, outputPath / "soundaliases" / (soundAlias.name + ".csv"), std::filesystem::copy_options::overwrite_existing);
+
 					for (const auto& file : soundAlias.files)
 					{
 						auto soundFilePath = root / "raw" / "sound" / file;

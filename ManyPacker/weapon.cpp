@@ -62,7 +62,7 @@ namespace ManyPacker
 				std::string gun = "gunModel" + (i != 1 ? std::to_string(i) : "");
 				std::string world = "worldModel" + (i != 1 ? std::to_string(i) : "");
 
-				if( weaponData.find(gun) != weaponData.end())
+				if (weaponData.find(gun) != weaponData.end())
 				{
 					if (!weaponData[gun].empty())
 					{
@@ -76,7 +76,7 @@ namespace ManyPacker
 				{
 					if (!weaponData[world].empty())
 					{
-						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[gun], ManyPacker::Utils::AssetType::XMODEL });
+						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[world], ManyPacker::Utils::AssetType::XMODEL });
 						ManyPacker::Assets::XModels.push_back({ weaponData[world] });
 						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[world]);
 					}

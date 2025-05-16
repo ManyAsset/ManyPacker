@@ -37,10 +37,16 @@ namespace ManyPacker
 			}
 		};
 
-		struct Asset
+		class Asset
 		{
-			std::string name;
-			AssetType type;
+			public:
+				std::string name;
+				AssetType type;
+
+				bool operator==(const Asset& other) const
+				{
+					return name == other.name;
+				}
 		};
 
 		extern std::vector<Asset> SelectedAssets;
