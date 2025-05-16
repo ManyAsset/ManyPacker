@@ -187,7 +187,7 @@ namespace ManyPacker
 
             // Export format combo box
             static int exportFormat = 0;
-            const char* formats[] = { ".zip", ".rar", ".7z", "Folder - No archive"};
+            const char* formats[] = { "Folder - No archive" }; //".zip", ".rar", ".7z",
             ImGui::Combo("Format", &exportFormat, formats, IM_ARRAYSIZE(formats));
 
             ImGui::SetCursorPosY(395);

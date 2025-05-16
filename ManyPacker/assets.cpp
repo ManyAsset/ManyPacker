@@ -221,6 +221,7 @@ namespace ManyPacker
 			modcsv.close();
 
 			//Clean up everything
+			Weapons.clear();
 			XModels.clear();
 			Materials.clear();
 			Images.clear();
