@@ -98,6 +98,45 @@ namespace ManyPacker
 					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["worldKnifeModel"]);
 				}
 			}
+
+			//XAnims
+			const std::vector<std::string> animKeys = {
+			"idleAnim", "emptyIdleAnim", "fireAnim", "lastShotAnim", "rechamberAnim",
+			"meleeAnim", "meleeChargeAnim", "reloadAnim", "reloadEmptyAnim",
+			"reloadStartAnim", "reloadEndAnim", "raiseAnim", "dropAnim", "firstRaiseAnim",
+			"altRaiseAnim", "altDropAnim", "quickRaiseAnim", "quickDropAnim",
+			"emptyRaiseAnim", "emptyDropAnim", "sprintInAnim", "sprintLoopAnim",
+			"sprintOutAnim", "nightVisionWearAnim", "nightVisionRemoveAnim",
+			"adsFireAnim", "adsLastShotAnim", "adsRechamberAnim", "adsUpAnim", "adsDownAnim"
+			};
+
+			const std::vector<std::string> ignoredXanims = {
+			"viewmodel_M4m203_knife_melee_1", "viewmodel_M4m203_knife_melee_2"
+			};
+
+			for (const auto& key : animKeys)
+			{
+				if (weaponData.find(key) != weaponData.end())
+				{
+					if (!weaponData[key].empty())
+					{
+						bool ignored = false;
+						for (const auto& ignoredAnim : ignoredXanims)
+						{
+							if (weaponData[key] == ignoredAnim)
+							{
+								ignored = true;
+								break;
+							}
+						}
+
+						if (!ignored)
+							ManyPacker::Assets::XAnims.push_back({ weaponData[key] });
+					}
+				}
+			}
+
+			file.close();
 		}
 	}
 }

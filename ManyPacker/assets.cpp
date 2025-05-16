@@ -14,6 +14,8 @@ namespace ManyPacker
 	{
 		std::vector<ManyPacker::Weapon::Weapon> Weapons;
 		std::vector<ManyPacker::XModel::XModel> XModels;
+		std::vector<std::string> XAnims;
+		std::vector<ManyPacker::SoundAlias::SoundAlias> SoundAliases;
 		std::vector<std::string> Materials;
 		std::vector<std::string> Images;
 
@@ -49,6 +51,35 @@ namespace ManyPacker
 				}
 			}
 
+			//Process soundaliases for every weapon
+			for (const auto& weapon : Weapons)
+			{
+				std::string weaponName = weapon.name;
+				if (weaponName.size() > 3 && weaponName.substr(weaponName.size() - 3) == "_mp")
+				{
+					weaponName = weaponName.substr(0, weaponName.size() - 3);
+				}
+
+				auto soundAliasPath = root / "raw" / "soundaliases" / (weaponName + ".csv");
+
+				if (std::filesystem::exists(soundAliasPath))
+				{
+					SoundAliases.push_back({ weaponName });
+					ManyPacker::SoundAlias::ReadSoundAlias(soundAliasPath);
+				}
+			}
+
+			std::cout << "Sound Aliases:" << std::endl;
+			for (const auto& soundAlias : SoundAliases)
+			{
+				std::cout << "  " << soundAlias.name << std::endl;
+
+				for (const auto& file : soundAlias.files)
+				{
+					std::cout << "    " << file << std::endl;
+				}
+			}
+
 			std::cout << "Weapons:" << std::endl;
 			for (const auto& weapon : Weapons)
 			{
@@ -64,6 +95,12 @@ namespace ManyPacker
 				{
 					std::cout << "  LOD: " << lod << std::endl;
 				}
+			}
+
+			std::cout << "XAnims:" << std::endl;
+			for (const auto& xanim : XAnims)
+			{
+				std::cout << "  " << xanim << std::endl;
 			}
 
 			std::sort(Materials.begin(), Materials.end());
@@ -95,7 +132,62 @@ namespace ManyPacker
             std::filesystem::path outputPath = std::filesystem::path(ManyPacker::Prefs::outputfolder) / outputFolder;
 			std::filesystem::create_directories(outputPath);
 
-			// Assume exportStatus is defined somewhere above this snippet
+			// Create soundalias and sound folder if it's more than 0
+			if (!SoundAliases.empty())
+			{
+				std::filesystem::create_directories(outputPath / "soundaliases");
+				std::filesystem::create_directories(outputPath / "sound");
+				for (const auto& soundAlias : SoundAliases)
+				{
+					auto soundAliasPath = root / "raw" / "soundaliases" / (soundAlias.name + ".csv");
+					if (!std::filesystem::exists(soundAliasPath))
+					{
+						std::cout << "Error: Missing file " << soundAliasPath << '\n';
+						exportStatus = 2;
+						CleanUpAssets();
+						return;
+					}
+					std::filesystem::copy_file(soundAliasPath, outputPath / "soundaliases" / (soundAlias.name + ".csv"), std::filesystem::copy_options::overwrite_existing);
+					for (const auto& file : soundAlias.files)
+					{
+						auto soundFilePath = root / "raw" / "sound" / file;
+						if (!std::filesystem::exists(soundFilePath))
+						{
+							std::cout << "Error: Missing file " << soundFilePath << '\n';
+							exportStatus = 2;
+							CleanUpAssets();
+							return;
+						}
+
+						// Remove the filename from the path
+						std::string::size_type pos = file.find_last_of("/\\");
+						if (pos != std::string::npos)
+						{
+							std::string dir = file.substr(0, pos);
+							std::filesystem::create_directories(outputPath / "sound" / dir);
+							std::filesystem::copy_file(soundFilePath, outputPath / "sound" / file, std::filesystem::copy_options::overwrite_existing);
+						}
+					}
+				}
+			}
+
+			// Create XAnim folder if it's more than 0
+			if (!XAnims.empty())
+			{
+				std::filesystem::create_directories(outputPath / "xanim");
+				for (const auto& xanim : XAnims)
+				{
+					auto xanimPath = root / "raw" / "xanim" / xanim;
+					if (!std::filesystem::exists(xanimPath))
+					{
+						std::cout << "Error: Missing file " << xanimPath << '\n';
+						exportStatus = 2;
+						CleanUpAssets();
+						return;
+					}
+					std::filesystem::copy_file(xanimPath, outputPath / "xanim" / xanim, std::filesystem::copy_options::overwrite_existing);
+				}
+			}
 
 			// Create XModel folder if it's more than 0
 			if (!XModels.empty())
@@ -223,6 +315,11 @@ namespace ManyPacker
 				for (const auto& asset : ManyPacker::Utils::SelectedAssets)
 				{
 					modcsv << const_cast<ManyPacker::Utils::AssetType&>(asset.type).toString() << asset.name << std::endl;
+				}
+
+				for(const auto& soundAlias : SoundAliases)
+				{
+					modcsv << "sound," << soundAlias.name << ",,all_mp" << std::endl;
 				}
 			}
 

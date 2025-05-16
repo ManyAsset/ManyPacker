@@ -43,6 +43,8 @@ namespace ManyPacker
 
 				ManyPacker::Assets::Images.push_back({ mapName });
             }
+
+            file.close();
 		}
 	}
 }

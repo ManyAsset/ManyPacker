@@ -307,7 +307,7 @@ namespace ManyPacker
 
             if (ImGui::BeginPopupModal("About", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("ManyPacker");
+                ImGui::Text(MANYPACKER_FULL_NAME);
                 ImGui::Separator();
                 ImGui::Text("A simple asset packer that automatically grabs every file connected\nto a specific asset from a CoD4 raw folder.");
                 ImGui::Text("Made by: Rex109");
