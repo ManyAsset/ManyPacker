@@ -212,7 +212,7 @@ namespace ManyPacker
             style.Alpha = 1.0f;
             style.DisabledAlpha = 0.6f;
             style.WindowPadding = ImVec2(8, 8);
-            style.WindowRounding = 4.0f;
+            //style.WindowRounding = 4.0f;
             style.WindowBorderSize = 1.0f;
             style.WindowMinSize = ImVec2(32, 32);
             style.WindowTitleAlign = ImVec2(0.0f, 0.5f);

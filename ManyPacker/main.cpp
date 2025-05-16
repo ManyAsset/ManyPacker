@@ -43,7 +43,7 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 	int x = (screenWidth - (rc.right - rc.left)) / 2;
 	int y = (screenHeight - (rc.bottom - rc.top)) / 2;
-	HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"" MANYPACKER_FULL_NAME, WS_OVERLAPPEDWINDOW, x, y, rc.right, rc.bottom, nullptr, nullptr, wc.hInstance, nullptr);
+	HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"" MANYPACKER_FULL_NAME, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, x, y, rc.right, rc.bottom, nullptr, nullptr, wc.hInstance, nullptr);
 
     if (!CreateDeviceD3D(hwnd))
     {
