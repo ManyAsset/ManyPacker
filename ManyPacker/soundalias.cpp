@@ -45,7 +45,7 @@ namespace ManyPacker
 			}
 			catch (const std::exception& e)
 			{
-				std::cerr << "Error reading sound alias file: " << filepath.c_str() << std::endl;
+				std::cerr << "Error reading sound alias file." << std::endl;
 				return;
 			}
 

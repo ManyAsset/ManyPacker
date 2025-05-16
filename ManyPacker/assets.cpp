@@ -136,7 +136,6 @@ namespace ManyPacker
 			}
 
 			//Make a new directory in ManyPacker::Prefs::outputfolder
-
 			std::string outputFolder = ManyPacker::Prefs::outputfolderName[0] == '\0' ? "processed_assets" : ManyPacker::Prefs::outputfolderName;
 
             std::filesystem::path outputPath = std::filesystem::path(ManyPacker::Prefs::outputfolder) / outputFolder;
@@ -347,6 +346,8 @@ namespace ManyPacker
 			modcsv.close();
 
 			CleanUpAssets();
+
+			// Check
 
 			exportStatus = 1;
 		}

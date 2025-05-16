@@ -56,52 +56,70 @@ namespace ManyPacker
 			
 			const std::filesystem::path root = ManyPacker::Prefs::rootfolder;
 
+			const std::vector<std::string> ignoredXModelSuffix = {
+				"_brock", "_bshdwl", "_bwmrpt", "_cmdtgr", "_stagger"
+			};
+
 			//gunModel and worldModel
 			for (size_t i = 0; i < 16; i++)
 			{
 				std::string gun = "gunModel" + (i != 1 ? std::to_string(i) : "");
 				std::string world = "worldModel" + (i != 1 ? std::to_string(i) : "");
 
-				if (weaponData.find(gun) != weaponData.end())
+				if (weaponData.find(gun) != weaponData.end() && !weaponData[gun].empty())
 				{
-					if (!weaponData[gun].empty())
+					bool ignored = false;
+					for (const auto& suffix : ignoredXModelSuffix)
 					{
-						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[gun], ManyPacker::Utils::AssetType::XMODEL });
-						ManyPacker::Assets::XModels.push_back({ weaponData[gun] });
-						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[gun]);
+						if (weaponData[gun].ends_with(suffix))
+						{
+							ignored = true;
+							break;
+						}
 					}
+
+					if (ignored)
+						continue;
+
+					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[gun], ManyPacker::Utils::AssetType::XMODEL });
+					ManyPacker::Assets::XModels.push_back({ weaponData[gun] });
+					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[gun]);
 				}
 
-				if( weaponData.find(world) != weaponData.end())
+				if( weaponData.find(world) != weaponData.end() && !weaponData[world].empty())
 				{
-					if (!weaponData[world].empty())
+					bool ignored = false;
+					for (const auto& suffix : ignoredXModelSuffix)
 					{
-						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[world], ManyPacker::Utils::AssetType::XMODEL });
-						ManyPacker::Assets::XModels.push_back({ weaponData[world] });
-						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[world]);
+						if (weaponData[gun].ends_with(suffix))
+						{
+							ignored = true;
+							break;
+						}
 					}
+
+					if (ignored)
+						continue;
+
+					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[world], ManyPacker::Utils::AssetType::XMODEL });
+					ManyPacker::Assets::XModels.push_back({ weaponData[world] });
+					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[world]);
 				}
 			}
 
 			//knifeModel and worldKnifeModel
-			if( weaponData.find("knifeModel") != weaponData.end())
+			if( weaponData.find("knifeModel") != weaponData.end() && !weaponData["knifeModel"].empty() && weaponData["knifeModel"] != "viewmodel_knife")
 			{
-				if (!weaponData["knifeModel"].empty() && weaponData["knifeModel"] != "viewmodel_knife")
-				{
-					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["knifeModel"], ManyPacker::Utils::AssetType::XMODEL });
-					ManyPacker::Assets::XModels.push_back({ weaponData["knifeModel"] });
-					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["knifeModel"]);
-				}
+				ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["knifeModel"], ManyPacker::Utils::AssetType::XMODEL });
+				ManyPacker::Assets::XModels.push_back({ weaponData["knifeModel"] });
+				ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["knifeModel"]);
 			}
 
-			if( weaponData.find("worldKnifeModel") != weaponData.end())
+			if( weaponData.find("worldKnifeModel") != weaponData.end() && !weaponData["worldKnifeModel"].empty() && weaponData["worldKnifeModel"] != "weapon_parabolic_knife")
 			{
-				if (!weaponData["worldKnifeModel"].empty() && weaponData["worldKnifeModel"] != "weapon_parabolic_knife")
-				{
-					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["worldKnifeModel"], ManyPacker::Utils::AssetType::XMODEL });
-					ManyPacker::Assets::XModels.push_back({ weaponData["worldKnifeModel"] });
-					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["worldKnifeModel"]);
-				}
+				ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["worldKnifeModel"], ManyPacker::Utils::AssetType::XMODEL });
+				ManyPacker::Assets::XModels.push_back({ weaponData["worldKnifeModel"] });
+				ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["worldKnifeModel"]);
 			}
 
 			//XAnims

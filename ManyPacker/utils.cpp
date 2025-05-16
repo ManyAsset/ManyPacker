@@ -7,7 +7,6 @@
 #include "utils.hpp"
 #include <fstream>
 
-
 namespace ManyPacker
 {
 	namespace Utils
@@ -20,6 +19,7 @@ namespace ManyPacker
         std::vector<Asset> AdditionalAssets;
 
         bool useSoundAliases = true;
+        int exportFormat = 0;
 
         std::wstring getExeDirectory()
         {

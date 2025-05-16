@@ -56,7 +56,9 @@ namespace ManyPacker
 
 		extern std::vector<Asset> SelectedAssets;
 		extern std::vector<Asset> AdditionalAssets;
+
 		extern bool useSoundAliases;
+		extern int exportFormat;
 
 		std::wstring getExeDirectory();
 		std::wstring selectFolder();
