@@ -129,7 +129,7 @@ namespace ManyPacker
             static int item_current = -1;
             static bool item_highlight = false;
 
-            if (ImGui::BeginListBox("Assets", ImVec2(300, 180)))
+            if (ImGui::BeginListBox("Assets", ImVec2(300, 300)))
             {
                 for (int n = 0; n < ManyPacker::Utils::SelectedAssets.size(); n++)
                 {
@@ -417,7 +417,7 @@ namespace ManyPacker
 
                 static int item_current = 1;
 
-                if (ImGui::BeginListBox(name.c_str(), ImVec2(300,180)))
+                if (ImGui::BeginListBox(name.c_str(), ImVec2(300, 300)))
                 {
                     for (int i = 0; i < items.size(); i++)
                     {

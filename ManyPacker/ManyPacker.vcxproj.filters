@@ -60,6 +60,9 @@
     <ClCompile Include="material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="weapon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.hpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="material.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="weapon.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

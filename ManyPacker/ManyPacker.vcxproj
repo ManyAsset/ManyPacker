@@ -152,6 +152,7 @@
     <ClCompile Include="material.cpp" />
     <ClCompile Include="prefs.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="weapon.cpp" />
     <ClCompile Include="xmodel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="material.hpp" />
     <ClInclude Include="prefs.hpp" />
     <ClInclude Include="utils.hpp" />
+    <ClInclude Include="weapon.hpp" />
     <ClInclude Include="xmodel.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -15,6 +15,7 @@ namespace ManyPacker
             if (!file)
             {
                 std::cerr << "Failed to open file.\n";
+
             }
 
             uint16_t version;

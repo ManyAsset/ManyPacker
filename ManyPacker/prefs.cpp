@@ -19,6 +19,22 @@ namespace ManyPacker
             std::wstring tempOutputFolder = loadPreference(L"outputfolder");
 
             wcstombs_s(NULL, ManyPacker::Prefs::outputfolder, sizeof(ManyPacker::Prefs::outputfolder), tempOutputFolder.c_str(), _TRUNCATE);
+
+            if(rootfolder.empty())
+            {
+				//Get the current working directory
+				wchar_t currentDir[MAX_PATH];
+				GetCurrentDirectoryW(MAX_PATH, currentDir);
+
+                rootfolder = currentDir;
+
+                if (ManyPacker::Utils::checkCod4Dir())
+                {
+                    savePreference(rootfolder, L"rootfolder");
+                }
+                else
+					rootfolder = L"";
+			}
         }
 
         void savePreference(const std::wstring& value, const LPCWSTR key)

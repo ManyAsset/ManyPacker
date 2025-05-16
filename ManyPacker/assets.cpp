@@ -5,11 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include "material.hpp"
+#include "weapon.hpp"
 
 namespace ManyPacker
 {
 	namespace Assets
 	{
+		std::vector<ManyPacker::Weapon::Weapon> Weapons;
 		std::vector<ManyPacker::XModel::XModel> XModels;
 		std::vector<std::string> Materials;
 		std::vector<std::string> Images;
@@ -31,10 +33,25 @@ namespace ManyPacker
 			{
 				switch (asset.type.type)
 				{
-				case ManyPacker::Utils::AssetType::XMODEL:
-					XModels.push_back({ asset.name });
-					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / asset.name);
+					case ManyPacker::Utils::AssetType::SP_WEAPON:
+						Weapons.push_back({ asset.name, ManyPacker::Weapon::Weapon::SP_WEAPON });
+						ManyPacker::Weapon::ReadWeapon(root / "raw" / "weapons" / "sp" / asset.name);
+						break;
+					case ManyPacker::Utils::AssetType::MP_WEAPON:
+						Weapons.push_back({ asset.name, ManyPacker::Weapon::Weapon::MP_WEAPON });
+						ManyPacker::Weapon::ReadWeapon(root / "raw" / "weapons" / "mp" / asset.name);
+						break;
+					case ManyPacker::Utils::AssetType::XMODEL:
+						XModels.push_back({ asset.name });
+						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / asset.name);
+						break;
 				}
+			}
+
+			std::cout << "Weapons:" << std::endl;
+			for (const auto& weapon : Weapons)
+			{
+				std::cout << "  " << weapon.name << std::endl;
 			}
 
 			std::cout << "XModels:" << std::endl;
@@ -173,6 +190,23 @@ namespace ManyPacker
 				}
 			}
 
+			// Create weapons folder if it's more than 0
+			if (!Weapons.empty())
+			{
+				std::filesystem::create_directories(outputPath / "weapons" );
+				for (const auto& weapon : Weapons)
+				{
+					std::filesystem::create_directories(outputPath / "weapons" / (weapon.type == ManyPacker::Weapon::Weapon::SP_WEAPON ? "sp" : "mp"));
+					auto weaponPath = root / "raw" / "weapons" / (weapon.type == ManyPacker::Weapon::Weapon::SP_WEAPON ? "sp" : "mp") / weapon.name;
+					if (!std::filesystem::exists(weaponPath))
+					{
+						std::cout << "Error: Missing file " << weaponPath << '\n';
+						exportStatus = 2;
+						return;
+					}
+					std::filesystem::copy_file(weaponPath, outputPath / "weapons" / (weapon.type == ManyPacker::Weapon::Weapon::SP_WEAPON ? "sp" : "mp") / weapon.name, std::filesystem::copy_options::overwrite_existing);
+				}
+			}
 
 			//Create the mod.csv file
 			std::ofstream modcsv(outputPath / "mod.csv");
