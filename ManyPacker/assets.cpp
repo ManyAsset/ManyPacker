@@ -14,11 +14,14 @@ namespace ManyPacker
 		std::vector<std::string> Materials;
 		std::vector<std::string> Images;
 
+		int exportStatus = -1;
+
 		void ProcessAllAssets()
 		{
 			if(ManyPacker::Utils::SelectedAssets.empty())
 			{
 				std::cout << "No assets selected." << std::endl;
+				exportStatus = 0;
 				return;
 			}
 
@@ -74,7 +77,9 @@ namespace ManyPacker
             std::filesystem::path outputPath = std::filesystem::path(ManyPacker::Prefs::outputfolder) / outputFolder;
 			std::filesystem::create_directories(outputPath);
 
-			//Create XModel folder if it's more than 0
+			// Assume exportStatus is defined somewhere above this snippet
+
+			// Create XModel folder if it's more than 0
 			if (!XModels.empty())
 			{
 				std::filesystem::create_directories(outputPath / "xmodel");
@@ -83,36 +88,91 @@ namespace ManyPacker
 
 				for (const auto& xmodel : XModels)
 				{
-					std::filesystem::copy_file(root / "raw" / "xmodel" / xmodel.name, outputPath / "xmodel" / xmodel.name, std::filesystem::copy_options::overwrite_existing);
-					std::filesystem::copy_file(root / "raw" / "xmodelparts" / xmodel.LODs[0], outputPath / "xmodelparts" / xmodel.LODs[0], std::filesystem::copy_options::overwrite_existing);
+					auto xmodelPath = root / "raw" / "xmodel" / xmodel.name;
+					auto partPath = root / "raw" / "xmodelparts" / xmodel.LODs[0];
+
+					if (!std::filesystem::exists(xmodelPath))
+					{
+						std::cout << "Error: Missing file " << xmodelPath << '\n';
+						exportStatus = 2;
+						return;
+					}
+
+					if (!std::filesystem::exists(partPath))
+					{
+						std::cout << "Error: Missing file " << partPath << '\n';
+						exportStatus = 2;
+						return;
+					}
+
+					std::filesystem::copy_file(xmodelPath, outputPath / "xmodel" / xmodel.name, std::filesystem::copy_options::overwrite_existing);
+					std::filesystem::copy_file(partPath, outputPath / "xmodelparts" / xmodel.LODs[0], std::filesystem::copy_options::overwrite_existing);
 
 					for (const auto& lod : xmodel.LODs)
-						std::filesystem::copy_file(root / "raw" / "xmodelsurfs" / lod, outputPath / "xmodelsurfs" / lod, std::filesystem::copy_options::overwrite_existing);
+					{
+						auto surfPath = root / "raw" / "xmodelsurfs" / lod;
+
+						if (!std::filesystem::exists(surfPath))
+						{
+							std::cout << "Error: Missing file " << surfPath << '\n';
+							exportStatus = 2;
+							return;
+						}
+						std::filesystem::copy_file(surfPath, outputPath / "xmodelsurfs" / lod, std::filesystem::copy_options::overwrite_existing);
+					}
 				}
 			}
 
-			//Create materials folder if it's more than 0
+			// Create materials folder if it's more than 0
 			if (!Materials.empty())
 			{
 				std::filesystem::create_directories(outputPath / "materials");
 				std::filesystem::create_directories(outputPath / "material_properties");
+
 				for (const auto& material : Materials)
 				{
-					std::filesystem::copy_file(root / "raw" / "materials" / material, outputPath / "materials" / material, std::filesystem::copy_options::overwrite_existing);
-					std::filesystem::copy_file(root / "raw" / "material_properties" / material, outputPath / "material_properties" / material, std::filesystem::copy_options::overwrite_existing);
+					auto matPath = root / "raw" / "materials" / material;
+					auto propPath = root / "raw" / "material_properties" / material;
+
+					if (!std::filesystem::exists(matPath))
+					{
+						std::cout << "Error: Missing file " << matPath << '\n';
+						exportStatus = 2;
+						return;
+					}
+					if (!std::filesystem::exists(propPath))
+					{
+						std::cout << "Error: Missing file " << propPath << '\n';
+						exportStatus = 2;
+						return;
+					}
+
+					std::filesystem::copy_file(matPath, outputPath / "materials" / material, std::filesystem::copy_options::overwrite_existing);
+					std::filesystem::copy_file(propPath, outputPath / "material_properties" / material, std::filesystem::copy_options::overwrite_existing);
 				}
 			}
 
-			//Create images folder if it's more than 0
+			// Create images folder if it's more than 0
 			if (!Images.empty())
 			{
 				std::filesystem::create_directories(outputPath / "images");
+
 				for (const auto& image : Images)
 				{
-                    std::string iwi = image + ".iwi";
-					std::filesystem::copy_file(root / "raw" / "images" / iwi, outputPath / "images" / iwi, std::filesystem::copy_options::overwrite_existing);
+					std::string iwi = image + ".iwi";
+					auto imagePath = root / "raw" / "images" / iwi;
+
+					if (!std::filesystem::exists(imagePath))
+					{
+						std::cout << "Error: Missing file " << imagePath << '\n';
+						exportStatus = 2;
+						return;
+					}
+
+					std::filesystem::copy_file(imagePath, outputPath / "images" / iwi, std::filesystem::copy_options::overwrite_existing);
 				}
 			}
+
 
 			//Create the mod.csv file
 			std::ofstream modcsv(outputPath / "mod.csv");
@@ -130,6 +190,8 @@ namespace ManyPacker
 			XModels.clear();
 			Materials.clear();
 			Images.clear();
+
+			exportStatus = 1;
 		}
 	}
 }

@@ -10,6 +10,8 @@ namespace ManyPacker
 		extern std::vector<std::string> Materials;
 		extern std::vector<std::string> Images;
 
+		extern int exportStatus;
+
 		void ProcessAllAssets();
 	}
 }

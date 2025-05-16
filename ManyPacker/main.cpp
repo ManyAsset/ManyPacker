@@ -19,8 +19,16 @@ void CleanupDeviceD3D();
 void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-int main(int, char**)
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
 {
+#ifdef _DEBUG
+	AllocConsole();
+
+	FILE* f;
+	freopen_s(&f, "CONOUT$", "w", stdout);
+	freopen_s(&f, "CONOUT$", "w", stderr);
+#endif
+
     ManyPacker::Prefs::LoadPrefs();
     ManyPacker::Utils::updateAssets();
 
@@ -29,7 +37,7 @@ int main(int, char**)
     ::RegisterClassExW(&wc);
 
 	//Set window at center of the screen
-	RECT rc = { 0, 0, 890, 370 };
+	RECT rc = { 0, 0, 1155, 495 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int screenHeight = GetSystemMetrics(SM_CYSCREEN);

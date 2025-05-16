@@ -77,13 +77,30 @@ namespace ManyPacker
             }
 
             if (!ManyPacker::Utils::checkCod4Dir() && !ManyPacker::Prefs::rootfolder.empty())
-            {
                 ImGui::OpenPopup("Invalid CoD4 root dir!");
+
+            if (ManyPacker::Assets::exportStatus == 0)
+            {
+				ImGui::OpenPopup("No Assets Selected!");
+				ManyPacker::Assets::exportStatus = -1;
+            }
+            else if (ManyPacker::Assets::exportStatus == 1)
+            {
+                ImGui::OpenPopup("Success!");
+                ManyPacker::Assets::exportStatus = -1;
+            } 
+            else if (ManyPacker::Assets::exportStatus == 2)
+            {
+                ImGui::OpenPopup("Error!");
+				ManyPacker::Assets::exportStatus = -1;
             }
 
 			Components::AboutWindow();
 			Components::SelectDirWindow();
 			Components::InvalidDirWindow();
+			Components::SuccessfulExportWindow();
+			Components::ErrorExportWindow();
+			Components::AssetListEmptyWindow();
 
             // === Left Panel: Asset Selection ===
             ImGui::BeginChild("AssetSelection", ImVec2(childWidth, 0), true);
@@ -112,7 +129,7 @@ namespace ManyPacker
             static int item_current = -1;
             static bool item_highlight = false;
 
-            if (ImGui::BeginListBox("Assets", ImVec2(183, 180)))
+            if (ImGui::BeginListBox("Assets", ImVec2(300, 180)))
             {
                 for (int n = 0; n < ManyPacker::Utils::SelectedAssets.size(); n++)
                 {
@@ -130,6 +147,7 @@ namespace ManyPacker
                 ImGui::EndListBox();
             }
 
+			ImGui::SetCursorPosY(368);
 
             if (ImGui::Button("Remove Selected", ImVec2(-1, 0)))
             {
@@ -171,6 +189,8 @@ namespace ManyPacker
             static int exportFormat = 0;
             const char* formats[] = { ".zip", ".rar", ".7z", "Folder - No archive"};
             ImGui::Combo("Format", &exportFormat, formats, IM_ARRAYSIZE(formats));
+
+            ImGui::SetCursorPosY(395);
 
             // Export button
             if (ImGui::Button("Export", ImVec2(-1, 0)))
@@ -338,6 +358,54 @@ namespace ManyPacker
             }
         }
 
+        void SuccessfulExportWindow()
+        {
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopupModal("Success!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Asset(s) exported successfully.");
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
+
+        void ErrorExportWindow()
+        {
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopupModal("Error!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("An error occurred during export.");
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+			}
+        }
+
+        void AssetListEmptyWindow()
+        {
+            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2, ImGui::GetIO().DisplaySize.y / 2), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+            if (ImGui::BeginPopupModal("No Assets Selected!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Please select at least one asset to export.");
+
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::SetItemDefaultFocus();
+                ImGui::EndPopup();
+            }
+        }
+
         void ItemSelection(std::string name, std::vector<std::string> &items, ManyPacker::Utils::AssetType::Type type)
         {
             if (ImGui::BeginTabItem(name.c_str()))
@@ -349,7 +417,7 @@ namespace ManyPacker
 
                 static int item_current = 1;
 
-                if (ImGui::BeginListBox(name.c_str(), ImVec2(183,180)))
+                if (ImGui::BeginListBox(name.c_str(), ImVec2(300,180)))
                 {
                     for (int i = 0; i < items.size(); i++)
                     {
@@ -381,6 +449,8 @@ namespace ManyPacker
                     }
                     ImGui::EndListBox();
                 }
+                
+				ImGui::SetCursorPosY(395);
 
                 if (ImGui::Button("Add Selected", ImVec2(-1, 0)) && selectedItem != -1)
                 {
