@@ -17,6 +17,7 @@ namespace ManyPacker
 		std::vector<std::string> SPWeapons;
 
         std::vector<Asset> SelectedAssets;
+        std::vector<Asset> AdditionalAssets;
 
         std::wstring getExeDirectory()
         {

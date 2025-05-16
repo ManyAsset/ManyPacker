@@ -7,6 +7,7 @@
 #include "assets.hpp"
 #include <filesystem>
 #include "prefs.hpp"
+#include "utils.hpp"
 
 namespace ManyPacker
 {
@@ -65,6 +66,7 @@ namespace ManyPacker
 				{
 					if (!weaponData[gun].empty())
 					{
+						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[gun], ManyPacker::Utils::AssetType::XMODEL });
 						ManyPacker::Assets::XModels.push_back({ weaponData[gun] });
 						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[gun]);
 					}
@@ -74,6 +76,7 @@ namespace ManyPacker
 				{
 					if (!weaponData[world].empty())
 					{
+						ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[gun], ManyPacker::Utils::AssetType::XMODEL });
 						ManyPacker::Assets::XModels.push_back({ weaponData[world] });
 						ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData[world]);
 					}
@@ -85,6 +88,7 @@ namespace ManyPacker
 			{
 				if (!weaponData["knifeModel"].empty() && weaponData["knifeModel"] != "viewmodel_knife")
 				{
+					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["knifeModel"], ManyPacker::Utils::AssetType::XMODEL });
 					ManyPacker::Assets::XModels.push_back({ weaponData["knifeModel"] });
 					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["knifeModel"]);
 				}
@@ -94,6 +98,7 @@ namespace ManyPacker
 			{
 				if (!weaponData["worldKnifeModel"].empty() && weaponData["worldKnifeModel"] != "weapon_parabolic_knife")
 				{
+					ManyPacker::Utils::AdditionalAssets.push_back({ weaponData["worldKnifeModel"], ManyPacker::Utils::AssetType::XMODEL });
 					ManyPacker::Assets::XModels.push_back({ weaponData["worldKnifeModel"] });
 					ManyPacker::XModel::ReadXModel(root / "raw" / "xmodel" / weaponData["worldKnifeModel"]);
 				}
@@ -132,6 +137,56 @@ namespace ManyPacker
 
 						if (!ignored)
 							ManyPacker::Assets::XAnims.push_back({ weaponData[key] });
+					}
+				}
+			}
+
+			//Materials
+			const std::vector<std::string> materialKeys = {
+				"killIcon", "hudIcon", "adsOverlayShader", "adsOverlayShaderLowRes"
+			};
+
+			const std::vector<std::string> ignoredMaterials = {
+				"hud_icon_ak47_gp25", "hud_icon_ak74u", "hud_icon_artillery",
+				"hud_icon_at4", "hud_icon_barrett50cal", "hud_icon_benelli_m4",
+				"hud_icon_c4", "hud_icon_claymore", "hud_icon_cobra",
+				"hud_icon_colt_45", "hud_icon_desert_eagle", "hud_icon_dragunov",
+				"hud_icon_g3", "hud_icon_g36c", "hud_icon_g36c_mp",
+				"hud_icon_javelin", "hud_icon_m4_grenadier", "hud_icon_m4_grunt",
+				"hud_icon_m4_silencer", "hud_icon_m4carbine", "hud_icon_m4m203_silencer",
+				"hud_icon_m9beretta", "hud_icon_m14", "hud_icon_m14_scoped",
+				"hud_icon_m16a4", "hud_icon_m16a4_grenade", "hud_icon_m40a3",
+				"hud_icon_m60e4", "hud_icon_m249saw", "hud_icon_m249saw_mounted",
+				"hud_icon_mini_uzi", "hud_icon_minigun", "hud_icon_mp5",
+				"hud_icon_mp5_silencer", "hud_icon_mp44", "hud_icon_nvg",
+				"hud_icon_p90", "hud_icon_pistol", "hud_icon_remington700",
+				"hud_icon_rpd", "hud_icon_rpg", "hud_icon_rpg_dpad",
+				"hud_icon_shotgun", "hud_icon_skorpian", "hud_icon_sniperrifle",
+				"hud_icon_stinger", "hud_icon_usp_45", "hud_icon_winchester_1200",
+				"killIcon_44","killIcon_30cal","killIcon_40mm_grenade","killIcon_40mm_grenade_mp","killIcon_ak47"
+			};
+
+			for (const auto& key : materialKeys)
+			{
+				if (weaponData.find(key) != weaponData.end())
+				{
+					if (!weaponData[key].empty())
+					{
+						bool ignored = false;
+						for (const auto& ignoredMaterial : ignoredMaterials)
+						{
+							if (weaponData[key] == ignoredMaterial)
+							{
+								ignored = true;
+								break;
+							}
+						}
+
+						if (!ignored)
+						{
+							ManyPacker::Utils::AdditionalAssets.push_back({ weaponData[key], ManyPacker::Utils::AssetType::MATERIAL });
+							ManyPacker::Assets::Materials.push_back({ weaponData[key] });
+						}
 					}
 				}
 			}

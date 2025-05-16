@@ -18,6 +18,7 @@ namespace ManyPacker
 					MP_WEAPON,
 					SP_WEAPON,
 					XMODEL,
+					MATERIAL,
 					UNKNOWN
 				};
 
@@ -30,6 +31,7 @@ namespace ManyPacker
 					case MP_WEAPON:return "weapon,mp/";
 					case SP_WEAPON: return "weapon,sp/";
 					case XMODEL: return "xmodel,";
+					case MATERIAL: return "material,";
 					default: return "Unknown";
 				}
 			}
@@ -42,6 +44,7 @@ namespace ManyPacker
 		};
 
 		extern std::vector<Asset> SelectedAssets;
+		extern std::vector<Asset> AdditionalAssets;
 
 		std::wstring getExeDirectory();
 		std::wstring selectFolder();

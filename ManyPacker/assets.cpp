@@ -80,6 +80,9 @@ namespace ManyPacker
 				}
 			}
 
+			std::sort(Materials.begin(), Materials.end());
+			Materials.erase(std::unique(Materials.begin(), Materials.end()), Materials.end());
+
 			std::cout << "Weapons:" << std::endl;
 			for (const auto& weapon : Weapons)
 			{
@@ -280,9 +283,7 @@ namespace ManyPacker
 					if (!std::filesystem::exists(imagePath))
 					{
 						std::cout << "Error: Missing file " << imagePath << '\n';
-						exportStatus = 2;
-						CleanUpAssets();
-						return;
+						continue;
 					}
 
 					std::filesystem::copy_file(imagePath, outputPath / "images" / iwi, std::filesystem::copy_options::overwrite_existing);
@@ -312,6 +313,16 @@ namespace ManyPacker
 			std::ofstream modcsv(outputPath / "mod.csv");
 			if (modcsv.is_open())
 			{
+				for (const auto& xanim : XAnims)
+				{
+					modcsv << "xanim," << xanim << std::endl;
+				}
+
+				for (const auto& asset : ManyPacker::Utils::AdditionalAssets)
+				{
+					modcsv << const_cast<ManyPacker::Utils::AssetType&>(asset.type).toString() << asset.name << std::endl;
+				}
+
 				for (const auto& asset : ManyPacker::Utils::SelectedAssets)
 				{
 					modcsv << const_cast<ManyPacker::Utils::AssetType&>(asset.type).toString() << asset.name << std::endl;
@@ -332,7 +343,7 @@ namespace ManyPacker
 
 		void Assets::CleanUpAssets()
 		{
-
+			ManyPacker::Utils::AdditionalAssets.clear();
 			Weapons.clear();
 			XModels.clear();
 			Materials.clear();
