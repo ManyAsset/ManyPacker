@@ -283,7 +283,7 @@ namespace ManyPacker
 
 					if (!std::filesystem::exists(imagePath))
 					{
-						std::cout << "Error: Missing file " << imagePath << '\n';
+						std::cout << "Warning: Missing file " << imagePath << '\n';
 						continue;
 					}
 
