@@ -161,9 +161,18 @@
     <ClInclude Include="GUI.hpp" />
     <ClInclude Include="material.hpp" />
     <ClInclude Include="prefs.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="weapon.hpp" />
     <ClInclude Include="xmodel.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+    <Image Include="icon.png" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

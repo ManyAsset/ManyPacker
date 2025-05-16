@@ -7,6 +7,7 @@
 #include "defines.hpp"
 #include "prefs.hpp"
 #include "utils.hpp"
+#include "resource.h"
 
 static LPDIRECT3D9              g_pD3D = nullptr;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = nullptr;
@@ -33,7 +34,10 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     ManyPacker::Utils::updateAssets();
 
     ImGui_ImplWin32_EnableDpiAwareness();
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ManyPacker", nullptr };
+    // LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_APP_ICON)) check if it loads
+
+	HICON hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_APP_ICON));
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, hInst, hIcon, nullptr, nullptr, nullptr, L"ManyPacker", hIcon };
     ::RegisterClassExW(&wc);
 
 	//Set window at center of the screen
