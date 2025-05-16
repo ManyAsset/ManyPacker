@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <iostream>
 #include "utils.hpp"
+#include <fstream>
+
 
 namespace ManyPacker
 {
@@ -148,6 +150,16 @@ namespace ManyPacker
                 return;
 
             SelectedAssets.erase(SelectedAssets.begin() + index);
+        }
+
+        std::string ReadNullTerminatedString(std::ifstream& file)
+        {
+            std::string result;
+            char c;
+            while (file.get(c) && c != '\0') {
+                result += c;
+            }
+            return result;
         }
     }
 }

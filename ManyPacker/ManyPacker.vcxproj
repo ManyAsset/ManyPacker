@@ -149,6 +149,7 @@
     <ClCompile Include="assets.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="material.cpp" />
     <ClCompile Include="prefs.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="xmodel.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="assets.hpp" />
     <ClInclude Include="defines.hpp" />
     <ClInclude Include="GUI.hpp" />
+    <ClInclude Include="material.hpp" />
     <ClInclude Include="prefs.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="xmodel.hpp" />

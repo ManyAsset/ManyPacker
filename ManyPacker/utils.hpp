@@ -51,5 +51,7 @@ namespace ManyPacker
 
 		void addAsset(std::string assetname, ManyPacker::Utils::AssetType::Type type);
 		void removeAsset(int index);
+
+		std::string ReadNullTerminatedString(std::ifstream& file);
 	}
 }

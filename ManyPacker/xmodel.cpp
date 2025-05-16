@@ -3,16 +3,7 @@
 #include <vector>
 #include <string>
 #include "assets.hpp"
-
-std::string ReadNullTerminatedString(std::ifstream& file)
-{
-    std::string result;
-    char c;
-    while (file.get(c) && c != '\0') {
-        result += c;
-    }
-    return result;
-}
+#include "utils.hpp"
 
 namespace ManyPacker
 {
@@ -34,7 +25,7 @@ namespace ManyPacker
             }
 
             file.seekg(25, std::ios::cur);
-            ReadNullTerminatedString(file);
+            ManyPacker::Utils::ReadNullTerminatedString(file);
             
             struct LOD {
                 std::string name;
@@ -46,7 +37,7 @@ namespace ManyPacker
             {
                 uint32_t someInt;
                 file.read(reinterpret_cast<char*>(&someInt), 4);
-                std::string lodName = ReadNullTerminatedString(file);
+                std::string lodName = ManyPacker::Utils::ReadNullTerminatedString(file);
                 if (!lodName.empty()) {
                     lods.push_back({ lodName });
                 }
@@ -80,7 +71,7 @@ namespace ManyPacker
 
             for (int i = 0; i < numMaterials; ++i)
             {
-                ManyPacker::Assets::Materials.push_back(ReadNullTerminatedString(file));
+                ManyPacker::Assets::Materials.push_back(ManyPacker::Utils::ReadNullTerminatedString(file));
             }
         }
     }
