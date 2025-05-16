@@ -52,23 +52,28 @@ namespace ManyPacker
 			}
 
 			//Process soundaliases for every weapon
-			for (const auto& weapon : Weapons)
+
+			if (ManyPacker::Utils::useSoundAliases)
 			{
-				std::string weaponName = weapon.name;
-				if (weaponName.size() > 3 && weaponName.substr(weaponName.size() - 3) == "_mp")
+				for (const auto& weapon : Weapons)
 				{
-					weaponName = weaponName.substr(0, weaponName.size() - 3);
-				}
+					std::string weaponName = weapon.name;
+					if (weaponName.size() > 3 && weaponName.substr(weaponName.size() - 3) == "_mp")
+					{
+						weaponName = weaponName.substr(0, weaponName.size() - 3);
+					}
 
-				auto soundAliasPath = root / "raw" / "soundaliases" / (weaponName + ".csv");
+					auto soundAliasPath = root / "raw" / "soundaliases" / (weaponName + ".csv");
 
-				if (std::filesystem::exists(soundAliasPath))
-				{
-					SoundAliases.push_back({ weaponName });
-					ManyPacker::SoundAlias::ReadSoundAlias(soundAliasPath);
+					if (std::filesystem::exists(soundAliasPath))
+					{
+						SoundAliases.push_back({ weaponName });
+						ManyPacker::SoundAlias::ReadSoundAlias(soundAliasPath);
+					}
 				}
 			}
 
+			std::sort(ManyPacker::Utils::AdditionalAssets.begin(), ManyPacker::Utils::AdditionalAssets.end());
 			ManyPacker::Utils::AdditionalAssets.erase(std::unique(ManyPacker::Utils::AdditionalAssets.begin(), ManyPacker::Utils::AdditionalAssets.end()), ManyPacker::Utils::AdditionalAssets.end());
 
 			std::cout << "Sound Aliases:" << std::endl;
@@ -99,12 +104,16 @@ namespace ManyPacker
 				}
 			}
 
+			std::sort(XAnims.begin(), XAnims.end());
+			XAnims.erase(std::unique(XAnims.begin(), XAnims.end()), XAnims.end());
+
 			std::cout << "XAnims:" << std::endl;
 			for (const auto& xanim : XAnims)
 			{
 				std::cout << "  " << xanim << std::endl;
 			}
 
+			std::sort(Materials.begin(), Materials.end());
 			Materials.erase(std::unique(Materials.begin(), Materials.end()), Materials.end());
 			Materials.erase(std::remove(Materials.begin(), Materials.end(), "lambert1"), Materials.end());
 

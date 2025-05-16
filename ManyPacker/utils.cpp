@@ -19,6 +19,8 @@ namespace ManyPacker
         std::vector<Asset> SelectedAssets;
         std::vector<Asset> AdditionalAssets;
 
+        bool useSoundAliases = true;
+
         std::wstring getExeDirectory()
         {
             wchar_t path[MAX_PATH];

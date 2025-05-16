@@ -190,6 +190,8 @@ namespace ManyPacker
             const char* formats[] = { "Folder - No archive" }; //".zip", ".rar", ".7z",
             ImGui::Combo("Format", &exportFormat, formats, IM_ARRAYSIZE(formats));
 
+			ImGui::Checkbox("Export soundaliases by weapon name", &ManyPacker::Utils::useSoundAliases);
+
             ImGui::SetCursorPosY(395);
 
             // Export button

@@ -47,10 +47,16 @@ namespace ManyPacker
 				{
 					return name == other.name;
 				}
+
+				bool operator<(const Asset& other) const
+				{
+					return name < other.name;
+				}
 		};
 
 		extern std::vector<Asset> SelectedAssets;
 		extern std::vector<Asset> AdditionalAssets;
+		extern bool useSoundAliases;
 
 		std::wstring getExeDirectory();
 		std::wstring selectFolder();
