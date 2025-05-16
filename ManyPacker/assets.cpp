@@ -6,6 +6,7 @@
 #include <fstream>
 #include "material.hpp"
 #include "weapon.hpp"
+#include "assets.hpp"
 
 namespace ManyPacker
 {
@@ -112,6 +113,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << xmodelPath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 
@@ -119,6 +121,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << partPath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 
@@ -133,6 +136,7 @@ namespace ManyPacker
 						{
 							std::cout << "Error: Missing file " << surfPath << '\n';
 							exportStatus = 2;
+							CleanUpAssets();
 							return;
 						}
 						std::filesystem::copy_file(surfPath, outputPath / "xmodelsurfs" / lod, std::filesystem::copy_options::overwrite_existing);
@@ -155,12 +159,14 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << matPath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 					if (!std::filesystem::exists(propPath))
 					{
 						std::cout << "Error: Missing file " << propPath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 
@@ -183,6 +189,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << imagePath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 
@@ -202,6 +209,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << weaponPath << '\n';
 						exportStatus = 2;
+						CleanUpAssets();
 						return;
 					}
 					std::filesystem::copy_file(weaponPath, outputPath / "weapons" / (weapon.type == ManyPacker::Weapon::Weapon::SP_WEAPON ? "sp" : "mp") / weapon.name, std::filesystem::copy_options::overwrite_existing);
@@ -220,13 +228,18 @@ namespace ManyPacker
 
 			modcsv.close();
 
-			//Clean up everything
+			CleanUpAssets();
+
+			exportStatus = 1;
+		}
+
+		void Assets::CleanUpAssets()
+		{
+
 			Weapons.clear();
 			XModels.clear();
 			Materials.clear();
 			Images.clear();
-
-			exportStatus = 1;
 		}
 	}
 }

@@ -14,5 +14,6 @@ namespace ManyPacker
 		extern int exportStatus;
 
 		void ProcessAllAssets();
+		void CleanUpAssets();
 	}
 }
