@@ -41,4 +41,4 @@ jobs:
       with:
           name: ${{matrix.configuration}} binaries ${{matrix.platform}}
           path: |
-            D:\a\ManyPacker\${{matrix.platform}}\${{matrix.configuration}}\ManyPacker.exe
+            D:\a\ManyPacker\ManyPacker\${{matrix.platform}}\${{matrix.configuration}}\ManyPacker.exe
