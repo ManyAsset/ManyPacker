@@ -373,6 +373,7 @@ namespace ManyPacker
 			ManyPacker::Utils::AdditionalAssets.clear();
 			Weapons.clear();
 			XModels.clear();
+			XAnims.clear();
 			Materials.clear();
 			Images.clear();
 		}

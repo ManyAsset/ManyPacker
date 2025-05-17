@@ -33,9 +33,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     ManyPacker::Prefs::LoadPrefs();
     ManyPacker::Utils::updateAssets();
 
-    ImGui_ImplWin32_EnableDpiAwareness();
-    // LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_APP_ICON)) check if it loads
-
 	HICON hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_APP_ICON));
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, hInst, hIcon, nullptr, nullptr, nullptr, L"ManyPacker", hIcon };
     ::RegisterClassExW(&wc);
