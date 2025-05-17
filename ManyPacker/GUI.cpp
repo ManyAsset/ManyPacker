@@ -398,7 +398,7 @@ namespace ManyPacker
             {
                 ImGui::Text("Please select at least one asset to export.");
 
-                if (ImGui::Button("OK", ImVec2(120, 0)))
+                if (ImGui::Button("OK.", ImVec2(120, 0)))
                     ImGui::CloseCurrentPopup();
 
                 ImGui::SetItemDefaultFocus();
