@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "zip.h"
 
 namespace ManyPacker
 {
@@ -70,5 +71,6 @@ namespace ManyPacker
 		void removeAsset(int index);
 
 		std::string ReadNullTerminatedString(std::ifstream& file);
+		void zip_walk(zip_t* zip, const std::string& path, const std::string& base);
 	}
 }

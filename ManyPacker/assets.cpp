@@ -7,6 +7,7 @@
 #include "material.hpp"
 #include "weapon.hpp"
 #include "assets.hpp"
+#include <zip.h>
 
 namespace ManyPacker
 {
@@ -349,9 +350,19 @@ namespace ManyPacker
 
 			CleanUpAssets();
 
-			if (ManyPacker::Utils::exportFormat < 3)
+			if (ManyPacker::Utils::exportFormat == 0)
 			{
+				std::filesystem::current_path(std::filesystem::path(ManyPacker::Prefs::outputfolder));
 
+				struct zip_t* zip = zip_open((outputFolder + ".zip").c_str(), 0, 'w');
+				{
+					ManyPacker::Utils::zip_walk(zip, outputFolder, outputFolder);
+				}
+
+				zip_close(zip);
+
+				//Delete the folder after zipping
+				std::filesystem::remove_all(outputFolder);
 			}
 
 			exportStatus = 1;

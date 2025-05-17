@@ -6,6 +6,7 @@
 #include <iostream>
 #include "utils.hpp"
 #include <fstream>
+#include "zip.h"
 
 namespace ManyPacker
 {
@@ -164,5 +165,27 @@ namespace ManyPacker
             }
             return result;
         }
+
+        void zip_walk(zip_t* zip, const std::string& path, const std::string& base)
+        {
+            for (const auto& entry : std::filesystem::directory_iterator(path))
+            {
+                const std::string fullpath = entry.path().string();
+
+                std::string relative_path = std::filesystem::relative(entry.path(), base).string();
+
+                if (entry.is_directory())
+                {
+                    zip_walk(zip, fullpath, base);
+                }
+                else if (entry.is_regular_file())
+                {
+                    zip_entry_open(zip, relative_path.c_str());
+                    zip_entry_fwrite(zip, fullpath.c_str());
+                    zip_entry_close(zip);
+                }
+            }
+        }
+
     }
 }
