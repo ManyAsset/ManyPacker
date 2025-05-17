@@ -349,7 +349,10 @@ namespace ManyPacker
 
 			CleanUpAssets();
 
-			// Check
+			if (ManyPacker::Utils::exportFormat < 3)
+			{
+
+			}
 
 			exportStatus = 1;
 		}

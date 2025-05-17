@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)include\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\imgui;$(SolutionDir)deps\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)deps\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)include\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\imgui;$(SolutionDir)deps\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)deps\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)include\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\imgui;$(SolutionDir)deps\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)deps\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)include\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\imgui;$(SolutionDir)deps\imgui\backends;$(DXSDK_DIR)Include;$(SolutionDir)deps\rapidcsv;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -139,13 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\include\imgui\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="..\include\imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\include\imgui\imgui.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\deps\imgui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\deps\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\deps\imgui\imgui_widgets.cpp" />
     <ClCompile Include="assets.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
