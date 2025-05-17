@@ -22,9 +22,8 @@ jobs:
     runs-on: windows-latest
     strategy:
         matrix:
-          configuration:
-            - Debug
-            - Release
+          configuration: [Debug, Release]
+          platform: [x64, x86]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -35,11 +34,11 @@ jobs:
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{matrix.configuration}} ${{env.SOLUTION_FILE_PATH}}
+      run: msbuild /m /p:Configuration=${{matrix.configuration}} /p:Platform=${{ matrix.platform }} ${{env.SOLUTION_FILE_PATH}}
       
     - name: Upload binaries
       uses: actions/upload-artifact@v4
       with:
-          name: ${{matrix.configuration}} binaries
+          name: ${{matrix.configuration}} binaries ${{matrix.platform}}
           path: |
-            D:\a\ManyPacker\ManyPacker\${{matrix.configuration}}\ManyPacker.exe
+            D:\a\ManyPacker\${{matrix.platform}}\${{matrix.configuration}}\ManyPacker.exe
