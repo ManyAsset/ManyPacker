@@ -295,7 +295,7 @@ namespace ManyPacker
 						std::cout << "Error: Missing file " << imagePath << '\n';
 						exportStatus = 2;
 						CleanUpAssets();
-						continue;
+						return;
 					}
 
 					std::filesystem::copy_file(imagePath, outputPath / "images" / iwi, std::filesystem::copy_options::overwrite_existing);
