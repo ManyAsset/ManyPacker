@@ -66,6 +66,9 @@
     <ClCompile Include="..\deps\imgui\backends\imgui_impl_win32.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="..\deps\miniz\zip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI.hpp">
