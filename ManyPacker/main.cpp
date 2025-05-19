@@ -62,7 +62,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmd
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.IniFilename = NULL;
 
-    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsDark();
+    ManyPacker::GUI::SetStyle();
 
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX9_Init(g_pd3dDevice);

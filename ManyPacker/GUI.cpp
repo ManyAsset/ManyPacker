@@ -14,7 +14,6 @@ namespace ManyPacker
 			static bool about = false;
 			static bool showSelectDir = true;
 
-            SetStyle();
             ImGui::NewFrame();
 
             ImGuiViewport* viewport = ImGui::GetMainViewport();
