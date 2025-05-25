@@ -15,6 +15,7 @@ namespace ManyPacker
 		extern std::vector<std::string> Images;
 
 		extern int exportStatus;
+		extern std::string exportErrorMessage;
 
 		void ProcessAllAssets();
 		void CleanUpAssets();

@@ -80,8 +80,8 @@ namespace ManyPacker
 
             if (ManyPacker::Assets::exportStatus == 0)
             {
-				ImGui::OpenPopup("No Assets Selected!");
-				ManyPacker::Assets::exportStatus = -1;
+                ImGui::OpenPopup("No Assets Selected!");
+                ManyPacker::Assets::exportStatus = -1;
             }
             else if (ManyPacker::Assets::exportStatus == 1)
             {
@@ -91,7 +91,7 @@ namespace ManyPacker
             else if (ManyPacker::Assets::exportStatus == 2)
             {
                 ImGui::OpenPopup("Error!");
-				ManyPacker::Assets::exportStatus = -1;
+                ManyPacker::Assets::exportStatus = -1;
             }
 
 			Components::AboutWindow();
@@ -379,7 +379,7 @@ namespace ManyPacker
 
             if (ImGui::BeginPopupModal("Error!", NULL, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("An error occurred during export.");
+                ImGui::Text(("An error occurred during export.\n" + ManyPacker::Assets::exportErrorMessage).c_str());
 
                 if (ImGui::Button("OK", ImVec2(120, 0)))
                     ImGui::CloseCurrentPopup();

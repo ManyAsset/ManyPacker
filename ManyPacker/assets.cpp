@@ -21,6 +21,7 @@ namespace ManyPacker
 		std::vector<std::string> Images;
 
 		int exportStatus = -1;
+		std::string exportErrorMessage = "";
 
 		void ProcessAllAssets()
 		{
@@ -155,6 +156,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << soundAliasPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing soundalias file: " + soundAliasPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -168,6 +170,7 @@ namespace ManyPacker
 						{
 							std::cout << "Error: Missing file " << soundFilePath << '\n';
 							exportStatus = 2;
+							exportErrorMessage = "Missing sound file: " + soundFilePath.string();
 							CleanUpAssets();
 							return;
 						}
@@ -195,6 +198,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << xanimPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing xanim file: " + xanimPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -218,6 +222,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << xmodelPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing xmodel file: " + xmodelPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -226,6 +231,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << partPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing xmodelparts file: " + partPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -241,6 +247,7 @@ namespace ManyPacker
 						{
 							std::cout << "Error: Missing file " << surfPath << '\n';
 							exportStatus = 2;
+							exportErrorMessage = "Missing xmodelsurfs file: " + surfPath.string();
 							CleanUpAssets();
 							return;
 						}
@@ -264,6 +271,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << matPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing material file: " + matPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -271,6 +279,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << propPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing material properties file: " + propPath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -294,6 +303,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << imagePath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing image file: " + imagePath.string();
 						CleanUpAssets();
 						return;
 					}
@@ -314,6 +324,7 @@ namespace ManyPacker
 					{
 						std::cout << "Error: Missing file " << weaponPath << '\n';
 						exportStatus = 2;
+						exportErrorMessage = "Missing weapon file: " + weaponPath.string();
 						CleanUpAssets();
 						return;
 					}
